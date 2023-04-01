@@ -1,10 +1,12 @@
 import { useState } from "react";
-import PropTypes from "prop-types";
 
+import "./sign-up.scss";
+import { Button } from "../button/Button.jsx";
 import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
 } from "../../utils/firebase/firebase-utils";
+import { FormInput } from "../form-input/FormInput.jsx";
 
 const initialFormFields = {
   displayName: "",
@@ -61,44 +63,46 @@ const SignUp = () => {
   };
   return (
     <div className="sign-up-container">
-      <h2>Dont' have an account</h2>
+      <h2>Dont' have an account ?</h2>
       <span>Sign up with your email and password</span>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="displayName">Display Name</label>
-        <input
+        <FormInput
           type="text"
+          label="Name"
           required
           onChange={handleChange}
           name="displayName"
           value={displayName}
         />
-        <label>Email</label>
-        <input
+        <FormInput
           type="email"
+          label="Email"
           required
           onChange={handleChange}
           name="email"
           value={email}
           autoComplete="email"
         />
-        <label>Password</label>
-        <input
+        <FormInput
           type="password"
+          label="Password"
           required
           onChange={handleChange}
           name="password"
           value={password}
           autoComplete="new-password"
         />
-        <label>Confirm Password</label>
-        <input
+        <FormInput
           type="password"
+          label="Confirm Password"
           required
           onChange={handleChange}
           name="confirmPassword"
           value={confirmPassword}
         />
-        <button type="submit">Sign Up</button>
+        <Button buttonType="inverted" type="submit">
+          Sign Up
+        </Button>
       </form>
     </div>
   );
