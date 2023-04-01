@@ -1,4 +1,8 @@
-import { useReducer, useState } from 'react';
+import { useState } from 'react';
+import {
+    createAuthUserWithEmailAndPassword,
+    createUserDocumentFromAuth,
+} from '../../utils/firebase/firebase-utils';
 
 const defaultFormFields = {
     displayName: '',
@@ -10,18 +14,46 @@ const defaultFormFields = {
 const SignUp = () => {
     const [formFields, setFormFields] = useState(defaultFormFields);
     const { displayName, email, password, confirmPassword } = formFields;
-    
-    console.log(formFields);
+
+
+    const resetFormFields = () => {
+        setFormFields(defaultFormFields);
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        if (password !== confirmPassword) {
+            alert('Passwords does not match !');
+            return;
+        }
+
+        try {
+            const { user } = await createAuthUserWithEmailAndPassword(
+                email,
+                password
+            );
+            await createUserDocumentFromAuth(user, { displayName });
+            resetFormFields();
+        } catch (error) {
+            if (error.code === 'auth/email-already-in-use') {
+                alert('Cannot create user, email is already in use');
+            } else {
+                console.log(' user creation encountered an error', error);
+            }
+        }
+    };
 
     const handleChange = (event) => {
         const { name, value } = event.target;
 
-        setFormFields({ ...formFields, [name]: value })
+        setFormFields({ ...formFields, [name]: value });
     };
     return (
-        <div>
-            <h1>Sign up with your email and password</h1>
-            <form onSubmit={() => { }}>
+        <div className="sign-up-container">
+            <h2>Dont' have an account</h2>
+            <span>Sign up with your email and password</span>
+            <form onSubmit={handleSubmit}>
                 <label>Display Name</label>
                 <input
                     type="text"
@@ -54,7 +86,7 @@ const SignUp = () => {
                     name="confirmPassword"
                     value={confirmPassword}
                 />
-                <button type="submit">Submit</button>
+                <button type="submit">Sign Up</button>
             </form>
         </div>
     );
