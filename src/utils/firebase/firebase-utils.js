@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from "firebase/app";
 
 import {
   getAuth,
@@ -7,8 +7,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
-} from 'firebase/auth';
-import { getFirestore, getDoc, doc, setDoc } from 'firebase/firestore';
+} from "firebase/auth";
+import { getFirestore, getDoc, doc, setDoc } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -16,20 +16,20 @@ import { getFirestore, getDoc, doc, setDoc } from 'firebase/firestore';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: 'AIzaSyCn97doq5_BHI4OE9UcpiDbhFgvINA9YMs',
-  authDomain: 'crwn-clothing-db-73f91.firebaseapp.com',
-  projectId: 'crwn-clothing-db-73f91',
-  storageBucket: 'crwn-clothing-db-73f91.appspot.com',
-  messagingSenderId: '1023956494784',
-  appId: '1:1023956494784:web:eb86ec02b63ba15d940025',
-  measurementId: 'G-JZC8NQCLPK',
+  apiKey: "AIzaSyCn97doq5_BHI4OE9UcpiDbhFgvINA9YMs",
+  authDomain: "crwn-clothing-db-73f91.firebaseapp.com",
+  projectId: "crwn-clothing-db-73f91",
+  storageBucket: "crwn-clothing-db-73f91.appspot.com",
+  messagingSenderId: "1023956494784",
+  appId: "1:1023956494784:web:eb86ec02b63ba15d940025",
+  measurementId: "G-JZC8NQCLPK",
 };
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
-  prompt: 'select_account',
+  prompt: "select_account",
 });
 
 export const auth = getAuth();
@@ -40,30 +40,30 @@ export const signInWithGoogleRedirect = () =>
 
 export const db = getFirestore();
 
-export const createUserDocumentFromAuth = async (
-  userAuth,
-  additionalInformation = { }
-) => {
-  if (!userAuth) return;
-  const userDocRef = doc(db, 'users', userAuth.uid);
+export const createUserDocumentFromAuth = async (userAuth, userData = {}) => {
+  if (!userAuth) {
+    throw new Error('"User authentication object is missing');
+  }
 
-  const userSnapshot = await getDoc(userDocRef);
+  const { uid, displayName, email } = userAuth;
+  const userDocRef = doc(db, "users", uid);
 
-  if (!userSnapshot.exists()) {
-    const { displayName, email } = userAuth;
-    const createdAt = new Date();
-
-    try {
-      await setDoc(userDocRef, {
+  try {
+    await setDoc(
+      userDocRef,
+      {
         displayName,
         email,
-        createdAt,
-        ...additionalInformation,
-      });
-    } catch (error) {
-      console.log('error creating the user', error);
-    }
+        createdAt: new Date(),
+        ...userData,
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.log("error creating the user", error);
+    throw new Error("Error creating user document");
   }
+
   return userDocRef;
 };
 
