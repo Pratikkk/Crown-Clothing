@@ -1,14 +1,25 @@
-import { signInWithGooglePopup } from "../../utils/firebase/firebase-utils.js";
+import { useEffect } from 'react';
+import { getRedirectResult } from 'firebase/auth';
 
-export function SignIn() {
+import {
+  auth,
+  signInWithGooglePopup,
+  createUserDocumentFromAuth,
+  signInWithGoogleRedirect,
+} from '../../utils/firebase/firebase-utils.js';
+
+const SignIn = () => {
+  
   const logGoogleUser = async () => {
-    const response = await signInWithGooglePopup();
-    console.log(response);
+    const { user } = await signInWithGooglePopup();
+    const userDocRef = await createUserDocumentFromAuth(user);
   };
+
   return (
     <>
       <h1>Sign In Page</h1>
       <button onClick={logGoogleUser}>Sign in with Google Popup</button>
     </>
   );
-}
+};
+export default SignIn;
