@@ -1,5 +1,5 @@
-import { useState } from "react";
-
+import { useState,useContext } from "react";
+import { UserContext } from "../../contexts/UserContext";
 import "./sign-up.scss";
 import { Button } from "../button/Button.jsx";
 import {
@@ -8,7 +8,7 @@ import {
 } from "../../utils/firebase/firebase-utils";
 import { FormInput } from "../form-input/FormInput.jsx";
 
-const initialFormFields = {
+const INITIAL_FORM_FIELDS = {
   displayName: "",
   email: "",
   password: "",
@@ -16,11 +16,13 @@ const initialFormFields = {
 };
 
 const SignUp = () => {
-  const [formFields, setFormFields] = useState(initialFormFields);
+  const [formFields, setFormFields] = useState(INITIAL_FORM_FIELDS);
   const { displayName, email, password, confirmPassword } = formFields;
 
+  const {setCurrentUser} = useContext(UserContext)
+
   const resetFormFields = () => {
-    setFormFields((prev) => ({ ...prev, ...initialFormFields }));
+    setFormFields((prev) => ({ ...prev, ...INITIAL_FORM_FIELDS }));
   };
 
   const handleSubmit = async (event) => {
@@ -36,6 +38,7 @@ const SignUp = () => {
         email,
         password
       );
+      setCurrentUser(user);
       await createUserDocumentFromAuth(user, { displayName });
       resetFormFields();
     } catch (error) {
@@ -100,7 +103,7 @@ const SignUp = () => {
           name="confirmPassword"
           value={confirmPassword}
         />
-        <Button buttonType="inverted" type="submit">
+        <Button buttonType="" type="submit">
           Sign Up
         </Button>
       </form>
